@@ -22,4 +22,4 @@ cp -r [source.env_location] [./detination/.env]
 pm2 install .
 ```
 
-:warning:  Check slack channel for messages, but if messages  not came to slack channel check your slack_bot permission. Do you need "chat:write" permission.
+:warning:  Check slack channel for messages, but if messages  not came to slack channel check your slack_bot permission. You need "chat:write" permission.
