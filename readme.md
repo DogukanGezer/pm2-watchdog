@@ -10,16 +10,10 @@ This script inspect your pm2 services and if any service given exit code, it sen
 npm install
 ```
 
-2. Change example.env name as .env and set environment variables for slack integration
-
-```
-cp -r [source.env_location] [./detination/.env]
-```
-
 3. After all u need apply module to pm2. Locate to project folder and run this code
 
 ```
-pm2 install .
+SLACK_TOKEN=[token] SLACK_CHANNEL=[channel_id] pm2 install .
 ```
 
 :warning:  Check slack channel for messages, but if messages  not came to slack channel check your slack_bot permission. You need "chat:write" permission.
