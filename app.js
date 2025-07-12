@@ -1,36 +1,18 @@
+require('dotenv').config();
 
 var pmx = require('pmx');
 var pm2 = require('pm2');
-const axios = require('axios');
-require('dotenv').config();
+
+const { sendSlackMessage } = require("./utils/slack")
+const { fetchLastCommits } = require("./utils/git")
+
+let instances = [];
+let counters = [];
 
 pmx.initModule({
 
 }, function (err, conf) {
   var spawn = require('child_process').spawn;
-
-  let instances = [];
-  let counters = [];
-
-  async function publishSlackMessage(channel, msg) {
-    let token = process.env.SLACK_TOKEN;
-
-    try {
-      const response = await axios.post('https://slack.com/api/chat.postMessage', {
-        channel: channel,
-        text: msg
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      return response;
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   async function appendInstance(instance) {
     let index = instances.findIndex(x => x.name === instance.name && x.pm_id === instance.pm_id);
@@ -44,21 +26,23 @@ pmx.initModule({
     }
 
     if (counterIndex === -1) {
+      const lastCommits = await fetchLastCommits();
+
       counters.push({
         name: instance.name,
         counter: setTimeout(() => {
           let serviceInstance = instances.find(x => x.name === instance.name);
-          if (serviceInstance.event == 'restart') {
-            publishSlackMessage(
-              process.env.SLACK_CHANNEL,
-              `:rocket: :rocket: :rocket: :rocket: :rocket: :rocket:\`\`\`\nService:${serviceInstance.name}\nStatus:Deploying\nRestart Count:${serviceInstance.restart_time}\n\`\`\`:rocket: :rocket: :rocket: :rocket: :rocket: :rocket:`
-            )
+          if (!serviceInstance) {
+            console.error(`Service instance not found for name: ${instance.name}`);
+            return;
           }
-          if (serviceInstance.event == 'exit') {
-            publishSlackMessage(
-              process.env.SLACK_CHANNEL,
-              `:fire: :fire: :fire: :fire: :fire: :fire:\`\`\`\nService:${serviceInstance.name}\nStatus:${serviceInstance.event}\nRestart Count:${serviceInstance.restart_time}\n\`\`\`:fire: :fire: :fire: :fire: :fire: :fire:`
-            )
+
+          const commitMessages = lastCommits.length ? `\n\nLast Commits:\n${lastCommits.join('\n')}\n` : '';
+          if (serviceInstance.event === 'restart') {
+           sendSlackMessage(`:rocket: :rocket: :rocket: :rocket: :rocket: :rocket:\`\`\`\nService:${serviceInstance.name}\nStatus:Deploying\nRestart Count:${serviceInstance.restart_time}\n${commitMessages}\`\`\`:rocket: :rocket: :rocket: :rocket: :rocket: :rocket:`);
+          }
+          if (serviceInstance.event === 'exit') {
+            sendSlackMessage(`:fire: :fire: :fire: :fire: :fire: :fire:\`\`\`\nService:${serviceInstance.name}\nStatus:${serviceInstance.event}\nRestart Count:${serviceInstance.restart_time}\n${commitMessages}\`\`\`:fire: :fire: :fire: :fire: :fire: :fire:`);
           }
 
           clearTimeout(counters.find(x => x.name === serviceInstance.name).counter);
