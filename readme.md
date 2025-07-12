@@ -45,6 +45,13 @@ SLACK_TOKEN="your_slack_token"
 SLACK_CHANNEL="your_slack_channel_id"
 ```
 
+#### Optional:
+_If you want to enable GitHub-related features (such as tracking recent commits), add the following environment variables to your `.env` file:_
+```
+GITHUB_TOKEN="your_github_token"
+GITHUB_REPOSITORY="your github repository"
+```
+
 #### Step 4: Deploy the Module
 To deploy and run the module, use the following PM2 command:
 
@@ -57,10 +64,12 @@ This command installs and starts the PM2 Watchdog module.
 
 ## Environment Variables 🌐
 
-| Variable       | Description                       | Example Value          |
-|----------------|-----------------------------------|------------------------|
-| `SLACK_TOKEN`  | Your Slack Bot User OAuth Token   | `xoxb-your-slack-token` |
-| `SLACK_CHANNEL`| The ID of the Slack channel       | `your-channel-id`            |
+| Variable           | Description                                 | Example Value                |
+|--------------------|---------------------------------------------|------------------------------|
+| `SLACK_TOKEN`      | Your Slack Bot User OAuth Token              | `xoxb-your-slack-token`      |
+| `SLACK_CHANNEL`    | The ID of the Slack channel                  | `your-channel-id`            |
+| `GITHUB_TOKEN`     | Your GitHub Personal Access Token (optional) | `ghp_yourgithubtoken`        |
+| `GITHUB_REPOSITORY`| The GitHub repository (owner/repo) (optional)| `DogukanGezer/pm2-watchdog`  |
 
 ---
 
@@ -82,6 +91,13 @@ You will receive messages with details such as the service name, status, and res
 Service: your-service-name
 Status: Deploying
 Restart Count: 2
+
+Last Commits:
+b62ef4d - detailed readme file, and appended license (Doğukan GEZER)
+6147ee9 - removed example env (Doğukan GEZER)
+3e62c69 - detected deployed instances and changed environment pass method (Doğukan GEZER)
+2488540 - removed unneccessary codes (Doğukan GEZER)
+a8c0b5f - updated readme (Doğukan GEZER)
 🚀 🚀 🚀 🚀 🚀 🚀
 ```
 
